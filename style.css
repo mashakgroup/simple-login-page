@@ -1,0 +1,85 @@
+body {
+  background-color: #121212; /* Dark background */
+  color: #e0e0e0; /* Light text color */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: 'Arial', sans-serif; /* Updated font */
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out; /* Smooth transitions */
+}
+
+div {
+  background-color: #1f1f1f; /* Darker form background */
+  width: 400px;
+  padding: 30px;
+  border-radius: 16px; /* More rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); /* Soft shadow for depth */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Animation for depth */
+}
+
+div:hover {
+  transform: scale(1.02); /* Slight grow on hover */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.7); /* Deeper shadow on hover */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff; /* Bright white for the title */
+  margin-bottom: 20px; /* Add space below title */
+}
+
+input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #3d3d3d; /* Subtle border */
+  background-color: #2c2c2c; /* Dark input background */
+  color: #f5f5f5; /* Light input text */
+  margin-top: 10px;
+  transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth input focus animation */
+}
+
+input:focus {
+  background-color: #353535; /* Slightly lighter background on focus */
+  border-color: #8a2be2; /* Highlighted border on focus */
+  outline: none; /* Remove default outline */
+}
+
+label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  color: #b3b3b3; /* Softer label color */
+  transition: color 0.3s ease; /* Smooth label hover animation */
+}
+
+label:hover {
+  color: #ffffff; /* Brighten labels on hover */
+}
+
+button {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 20px;
+  background-color: #8a2be2; /* Bright button color */
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth button hover and transition */
+}
+
+button:hover {
+  background-color: #7a1fd2; /* Slightly darker button on hover */
+  transform: scale(1.05); /* Slight grow effect */
+}
