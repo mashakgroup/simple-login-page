@@ -1,23 +1,972 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login page</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Cracking Simulator</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --bg-darker: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #6200ee;
+            --accent-light: #bb86fc;
+            --success: #03dac6;
+            --error: #cf6679;
+            --safe-metal: #2c3e50;
+            --safe-dial: #34495e;
+            --safe-handle: #7f8c8d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        h1 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .safe {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            background-color: var(--safe-metal);
+            border-radius: 10px;
+            border: 8px solid #1a2530;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .safe-door {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--safe-metal);
+            border-radius: 3px;
+            z-index: 10;
+            transition: transform 1s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform-origin: left;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .safe-door.open {
+            transform: rotateY(-105deg);
+        }
+
+        .safe-handle {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            width: 30px;
+            height: 60px;
+            background-color: var(--safe-handle);
+            border-radius: 5px;
+            transform: translateY(-50%);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .safe-handle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background-color: #2c3e50;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .safe-dial {
+            width: 120px;
+            height: 120px;
+            background-color: var(--safe-dial);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .dial-marker {
+            position: absolute;
+            width: 5px;
+            height: 10px;
+            background-color: white;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .dial-number {
+            position: absolute;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: bold;
+            transform-origin: center;
+        }
+
+        .safe-dial::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 15px;
+            background-color: var(--accent-light);
+            transform: translateX(-50%);
+        }
+
+        .dial-inner {
+            width: 40px;
+            height: 40px;
+            background-color: #1a2530;
+            border-radius: 50%;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .safe-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .treasure {
+            width: 80px;
+            height: 80px;
+            background-color: gold;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--bg-darker);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--bg-dark);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover {
+            background-color: #2a2a2a;
+        }
+
+        .difficulty-btn.active {
+            background-color: var(--accent);
+            color: white;
+            box-shadow: 0 0 10px rgba(98, 0, 238, 0.5);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .combination-display {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .combination-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-dark);
+            border-radius: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .combination-number.current {
+            border: 2px solid var(--accent-light);
+            box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+        }
+
+        button {
+            padding: 12px 20px;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(98, 0, 238, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            font-size: 1.1rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .status.success {
+            color: var(--success);
+        }
+
+        .status.error {
+            color: var(--error);
+        }
+
+        .hints {
+            margin-top: 10px;
+            color: var(--text-secondary);
+        }
+
+        .timer {
+            font-size: 1.5rem;
+            margin-top: 10px;
+            color: var(--accent-light);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+            background-color: var(--bg-darker);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-light);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 600px) {
+            .safe {
+                width: 250px;
+                height: 350px;
+            }
+            
+            .safe-dial {
+                width: 100px;
+                height: 100px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .click-feedback {
+            position: fixed;
+            pointer-events: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(187, 134, 252, 0.7);
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 1000;
+            animation: clickRipple 0.6s ease-out;
+        }
+
+        @keyframes clickRipple {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+
+        .instructions {
+            background-color: var(--bg-darker);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .instructions h3 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+        }
+
+        .instructions p, .instructions ul {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background-color: var(--bg-darker);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+
+        .modal.visible .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal h2 {
+            color: var(--accent-light);
+            margin-bottom: 15px;
+        }
+
+        .modal p {
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            pointer-events: none;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body>
-  <div>
-    <form action="login">
-      <h1>Login Form</h1>
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email"> <!-- Corrected name attribute -->
-
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password"> <!-- Corrected name attribute -->
-
-      <button type="submit">Log in</button>
-    </form>
-  </div>
+    <div class="container">
+        <h1>Safe Cracking Simulator</h1>
+        
+        <div class="game-container">
+            <div class="safe">
+                <div class="safe-content">
+                    <div class="treasure">💎</div>
+                </div>
+                <div class="safe-door">
+                    <div class="safe-dial" id="safe-dial">
+                        <div class="dial-inner"></div>
+                    </div>
+                    <div class="safe-handle"></div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+                    <button class="difficulty-btn" data-difficulty="medium">Medium</button>
+                    <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+                    <button class="difficulty-btn" data-difficulty="expert">Expert</button>
+                </div>
+                
+                <div class="combination-display" id="combination-display">
+                    <!-- Will be populated by JS -->
+                </div>
+                
+                <div class="input-group">
+                    <button id="rotate-left">↺ Rotate Left</button>
+                    <button id="rotate-right">↻ Rotate Right</button>
+                    <button id="set-number">Set Number</button>
+                </div>
+                
+                <button id="try-unlock">Try to Unlock Safe</button>
+                
+                <div class="status" id="status"></div>
+                <div class="hints" id="hints"></div>
+                <div class="timer" id="timer">Time: 00:00</div>
+            </div>
+            
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value" id="attempts">0</div>
+                    <div class="stat-label">Attempts</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="success-rate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="best-time">--:--</div>
+                    <div class="stat-label">Best Time</div>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to Play</h3>
+                <p>You need to crack the safe by finding the correct combination:</p>
+                <ul>
+                    <li>Use the rotate buttons to turn the dial</li>
+                    <li>Press "Set Number" when you reach your desired number</li>
+                    <li>Complete the full combination and click "Try to Unlock"</li>
+                    <li>Different difficulty levels have different combination lengths and time limits</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <h2>Safe Cracked!</h2>
+            <p id="success-message">You successfully cracked the safe in <span id="completion-time">00:00</span>!</p>
+            <button id="play-again">Play Again</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game state
+            const state = {
+                difficulty: 'easy',
+                currentCombination: [],
+                targetCombination: [],
+                currentDialPosition: 0,
+                currentComboIndex: 0,
+                attempts: 0,
+                successes: 0,
+                gameStarted: false,
+                timerInterval: null,
+                startTime: null,
+                bestTimes: {
+                    easy: null,
+                    medium: null,
+                    hard: null,
+                    expert: null
+                }
+            };
+            
+            // Game settings
+            const settings = {
+                easy: {
+                    comboLength: 3,
+                    rangeMax: 30,
+                    timeLimit: 60,
+                    hintAccuracy: 5
+                },
+                medium: {
+                    comboLength: 3,
+                    rangeMax: 50,
+                    timeLimit: 45,
+                    hintAccuracy: 10
+                },
+                hard: {
+                    comboLength: 4,
+                    rangeMax: 70,
+                    timeLimit: 60,
+                    hintAccuracy: 15
+                },
+                expert: {
+                    comboLength: 5,
+                    rangeMax: 99,
+                    timeLimit: 90,
+                    hintAccuracy: null // No hints
+                }
+            };
+            
+            // DOM Elements
+            const dial = document.getElementById('safe-dial');
+            const comboDisplay = document.getElementById('combination-display');
+            const rotateLeftBtn = document.getElementById('rotate-left');
+            const rotateRightBtn = document.getElementById('rotate-right');
+            const setNumberBtn = document.getElementById('set-number');
+            const tryUnlockBtn = document.getElementById('try-unlock');
+            const statusElement = document.getElementById('status');
+            const hintsElement = document.getElementById('hints');
+            const timerElement = document.getElementById('timer');
+            const attemptsElement = document.getElementById('attempts');
+            const successRateElement = document.getElementById('success-rate');
+            const bestTimeElement = document.getElementById('best-time');
+            const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+            const safeDoor = document.querySelector('.safe-door');
+            const successModal = document.getElementById('success-modal');
+            const completionTimeElement = document.getElementById('completion-time');
+            const playAgainBtn = document.getElementById('play-again');
+            
+            // Initialize dial numbers
+            function initializeDial(maxValue) {
+                // Clear existing numbers
+                const existingNumbers = document.querySelectorAll('.dial-number');
+                existingNumbers.forEach(num => num.remove());
+                
+                // Calculate step based on max value (ensure we don't create too many numbers)
+                const step = maxValue <= 50 ? 5 : 10;
+                
+                // Create new numbers
+                for (let i = 0; i <= maxValue; i += step) {
+                    const number = document.createElement('div');
+                    number.className = 'dial-number';
+                    number.textContent = i;
+                    
+                    const angle = (i / maxValue) * 360;
+                    const radians = (angle - 90) * (Math.PI / 180);
+                    const radius = 55; // Distance from center
+                    
+                    const x = Math.cos(radians) * radius;
+                    const y = Math.sin(radians) * radius;
+                    
+                    number.style.left = `calc(50% + ${x}px)`;
+                    number.style.top = `calc(50% + ${y}px)`;
+                    number.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                    
+                    dial.appendChild(number);
+                }
+            }
+            
+            // Generate a random combination
+            function generateCombination() {
+                const currentSettings = settings[state.difficulty];
+                const combo = [];
+                
+                for (let i = 0; i < currentSettings.comboLength; i++) {
+                    combo.push(Math.floor(Math.random() * (currentSettings.rangeMax + 1)));
+                }
+                
+                return combo;
+            }
+            
+            // Update combination display
+            function updateCombinationDisplay() {
+                comboDisplay.innerHTML = '';
+                
+                const currentSettings = settings[state.difficulty];
+                for (let i = 0; i < currentSettings.comboLength; i++) {
+                    const numberElement = document.createElement('div');
+                    numberElement.className = 'combination-number';
+                    
+                    if (i === state.currentComboIndex) {
+                        numberElement.classList.add('current');
+                    }
+                    
+                    if (i < state.currentCombination.length) {
+                        numberElement.textContent = state.currentCombination[i];
+                    } else {
+                        numberElement.textContent = '?';
+                    }
+                    
+                    comboDisplay.appendChild(numberElement);
+                }
+            }
+            
+            // Update dial position
+            function updateDialPosition() {
+                const currentSettings = settings[state.difficulty];
+                const angle = (state.currentDialPosition / currentSettings.rangeMax) * 360;
+                dial.style.transform = `rotate(${angle}deg)`;
+            }
+            
+            // Format time (seconds to MM:SS)
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            // Update timer display
+            function updateTimer() {
+                if (!state.gameStarted) return;
+                
+                const currentTime = Math.floor((Date.now() - state.startTime) / 1000);
+                timerElement.textContent = `Time: ${formatTime(currentTime)}`;
+                
+                // Check time limit
+                const currentSettings = settings[state.difficulty];
+                if (currentTime >= currentSettings.timeLimit) {
+                    clearInterval(state.timerInterval);
+                    statusElement.textContent = 'Time's up! The safe remains locked.';
+                    statusElement.className = 'status error';
+                    resetGame();
+                }
+            }
+            
+            // Generate hints
+            function generateHints() {
+                if (!state.gameStarted) return;
+                
+                const currentSettings = settings[state.difficulty];
+                
+                // If expert mode, no hints
+                if (currentSettings.hintAccuracy === null) {
+                    hintsElement.textContent = 'Expert mode: No hints available';
+                    return;
+                }
+                
+                // Generate approximate hints
+                let hintsText = 'Hints (approximate): ';
+                state.targetCombination.forEach((num, index) => {
+                    // Add random variation within the hint accuracy range
+                    const variation = Math.floor(Math.random() * (currentSettings.hintAccuracy * 2 + 1)) - currentSettings.hintAccuracy;
+                    let hintValue = num + variation;
+                    
+                    // Ensure hint is in valid range
+                    hintValue = Math.max(0, Math.min(currentSettings.rangeMax, hintValue));
+                    
+                    hintsText += `#${index + 1}: ~${hintValue} `;
+                });
+                
+                hintsElement.textContent = hintsText;
+            }
+            
+            // Check if combination is correct
+            function checkCombination() {
+                if (state.currentCombination.length !== state.targetCombination.length) {
+                    return false;
+                }
+                
+                for (let i = 0; i < state.currentCombination.length; i++) {
+                    if (state.currentCombination[i] !== state.targetCombination[i]) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            // Create ripple effect on click
+            function createClickRipple(event) {
+                const ripple = document.createElement('div');
+                ripple.className = 'click-feedback';
+                ripple.style.left = `${event.clientX}px`;
+                ripple.style.top = `${event.clientY}px`;
+                document.body.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            }
+            
+            // Create confetti effect
+            function createConfetti() {
+                const colors = ['#ff0', '#f0f', '#0ff', '#f00', '#0f0', '#00f'];
+                const confettiCount = 100;
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = `${Math.random() * window.innerWidth}px`;
+                    confetti.style.top = '-10px';
+                    confetti.style.width = `${Math.random() * 10 + 5}px`;
+                    confetti.style.height = `${Math.random() * 10 + 5}px`;
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(confetti);
+                    
+                    // Animate confetti falling
+                    const duration = Math.random() * 3 + 2;
+                    const delay = Math.random() * 2;
+                    
+                    confetti.style.animation = `confettiFall ${duration}s ease-in ${delay}s forwards`;
+                    confetti.style.animationName = 'none';
+                    
+                    // Use keyframes
+                    confetti.animate([
+                        { transform: `translateY(0) rotate(0deg)`, opacity: 1 },
+                        { transform: `translateY(${window.innerHeight}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: duration * 1000,
+                        delay: delay * 1000,
+                        easing: 'ease-in',
+                        fill: 'forwards'
+                    });
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, (duration + delay) * 1000);
+                }
+            }
+            
+            // Start a new game
+            function startNewGame() {
+                // Reset state
+                state.currentCombination = [];
+                state.targetCombination = generateCombination();
+                state.currentDialPosition = 0;
+                state.currentComboIndex = 0;
+                state.gameStarted = true;
+                state.startTime = Date.now();
+                
+                // Update UI
+                updateDialPosition();
+                updateCombinationDisplay();
+                safeDoor.classList.remove('open');
+                statusElement.textContent = '';
+                statusElement.className = 'status';
+                
+                // Generate hints
+                generateHints();
+                
+                // Start timer
+                clearInterval(state.timerInterval);
+                state.timerInterval = setInterval(updateTimer, 1000);
+                updateTimer();
+                
+                console.log('Target combination:', state.targetCombination); // For debugging
+            }
+            
+            // Reset game state
+            function resetGame() {
+                state.gameStarted = false;
+                state.currentCombination = [];
+                state.currentComboIndex = 0;
+                clearInterval(state.timerInterval);
+                updateCombinationDisplay();
+            }
+            
+            // Update game stats
+            function updateStats() {
+                attemptsElement.textContent = state.attempts;
+                
+                const successRate = state.attempts > 0 
+                    ? Math.round((state.successes / state.attempts) * 100) 
+                    : 0;
+                successRateElement.textContent = `${successRate}%`;
+                
+                const bestTime = state.bestTimes[state.difficulty];
+                bestTimeElement.textContent = bestTime ? formatTime(bestTime) : '--:--';
+            }
+            
+            // Event Listeners
+            rotateLeftBtn.addEventListener('click', (e) => {
+                createClickRipple(e);
+                if (!state.gameStarted) startNewGame();
+                
+                const currentSettings = settings[state.difficulty];
+                state.currentDialPosition = (state.currentDialPosition - 1 + currentSettings.rangeMax + 1) % (currentSettings.rangeMax + 1);
+                updateDialPosition();
+            });
+            
+            rotateRightBtn.addEventListener('click', (e) => {
+                createClickRipple(e);
+                if (!state.gameStarted) startNewGame();
+                
+                const currentSettings = settings[state.difficulty];
+                state.currentDialPosition = (state.currentDialPosition + 1) % (currentSettings.rangeMax + 1);
+                updateDialPosition();
+            });
+            
+            setNumberBtn.addEventListener('click', (e) => {
+                createClickRipple(e);
+                if (!state.gameStarted) return;
+                
+                const currentSettings = settings[state.difficulty];
+                if (state.currentComboIndex < currentSettings.comboLength) {
+                    if (state.currentComboIndex < state.currentCombination.length) {
+                        state.currentCombination[state.currentComboIndex] = state.currentDialPosition;
+                    } else {
+                        state.currentCombination.push(state.currentDialPosition);
+                    }
+                    
+                    state.currentComboIndex = Math.min(state.currentComboIndex + 1, currentSettings.comboLength);
+                    updateCombinationDisplay();
+                }
+            });
+            
+            tryUnlockBtn.addEventListener('click', (e) => {
+    createClickRipple(e);
+    if (!state.gameStarted) return;
+    
+    const currentSettings = settings[state.difficulty];
+    const inputCode = document.getElementById('codeInput').value;
+    
+    if (inputCode.length !== currentSettings.codeLength) {
+        displayMessage('Code must be ' + currentSettings.codeLength + ' digits long', 'error');
+        return;
+    }
+    
+    if (!/^\d+$/.test(inputCode)) {
+        displayMessage('Code must contain only digits', 'error');
+        return;
+    }
+    
+    state.attempts++;
+    updateAttemptsDisplay();
+    
+    if (inputCode === state.secretCode) {
+        // Success! Player cracked the safe
+        state.gameStarted = false;
+        displayMessage('Safe cracked! Well done!', 'success');
+        playSound('unlock');
+        showConfetti();
+        revealTreasure();
+        
+        // Update stats
+        const timeElapsed = Math.floor((Date.now() - state.startTime) / 1000);
+        state.stats.gamesWon++;
+        state.stats.bestTime = state.stats.bestTime ? Math.min(state.stats.bestTime, timeElapsed) : timeElapsed;
+        saveStats();
+        
+        // Show game summary
+        setTimeout(() => {
+            showGameSummary(timeElapsed);
+        }, 2000);
+    } else {
+        // Wrong code, provide feedback
+        const feedback = generateFeedback(inputCode, state.secretCode, currentSettings.feedbackType);
+        displayFeedback(feedback);
+        
+        if (state.attempts >= currentSettings.maxAttempts) {
+            // Game over - too many attempts
+            state.gameStarted = false;
+            displayMessage('Too many attempts! The safe is locked forever.', 'error');
+            playSound('gameover');
+            state.stats.gamesLost++;
+            saveStats();
+            
+            // Show correct code and game summary
+            setTimeout(() => {
+                displayMessage(`The correct code was: ${state.secretCode}`, 'info');
+                showGameSummary();
+            }, 2000);
+        } else {
+            // Game continues
+            playSound('wrong');
+            
+            // Vibrate the input to indicate incorrect attempt
+            const codeInput = document.getElementById('codeInput');
+            codeInput.classList.add('shake');
+            setTimeout(() => {
+                codeInput.classList.remove('shake');
+            }, 500);
+        }
+    }
+    
+    // Clear input field for next attempt
+    document.getElementById('codeInput').value = '';
+});
+</script>
 </body>
 </html>
